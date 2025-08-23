@@ -10,7 +10,7 @@ export class PetService {
   constructor(
     @InjectRepository(Pet)
     private readonly petRepository: Repository<Pet>,
-  ) {}
+  ) { }
   async create(createPetDto: CreatePetDto) {
     return await this.petRepository.save(createPetDto);
   }
@@ -20,7 +20,7 @@ export class PetService {
   }
 
   async findOne(id: string) {
-    return await this.petRepository.findOneBy({id});
+    return await this.petRepository.findOneBy({ id });
   }
 
   async findByOwnerId(ownerId: string) {
@@ -31,14 +31,15 @@ export class PetService {
     });
   }
 
-  async update(id: string, updatePetDto: UpdatePetDto) {
+  async update(updatePetDto: UpdatePetDto) {
+    const { id, ...data } = updatePetDto;
     const petFound = await this.findOne(id);
     if (!petFound) {
       throw new Error('Pet not found');
     }
     return this.petRepository.save({
       ...petFound,
-      ...updatePetDto,
+      ...data,
     });
   }
 
