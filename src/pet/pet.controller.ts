@@ -31,6 +31,7 @@ export class PetController {
     return this.petService.findAll();
   }
 
+  
   // @ApiOperation({
   //   summary: 'Get a pet by id'
   // })
@@ -39,13 +40,9 @@ export class PetController {
   findOne(@Payload() id: string) {
     return this.petService.findOne(id);
   }
-
-  // @ApiOperation({
-  //   summary: 'Get a pet by owner id'
-  // })
-  // @Get('owner/:ownerId')
-  @MessagePattern({ cmd: 'find_pet_by_owner_id' })
-  findByOwnerId(@Payload() ownerId: string) {
+    
+  @MessagePattern({ cmd: 'find_all_pets_by_owner_id' })
+  findByOwnerId(@Payload('ownerId') ownerId: string) {
     return this.petService.findByOwnerId(ownerId);
   }
 

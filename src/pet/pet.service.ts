@@ -4,15 +4,28 @@ import { Repository } from 'typeorm';
 import { CreatePetDto } from './dto/create-pet.dto';
 import { UpdatePetDto } from './dto/update-pet.dto';
 import { Pet } from './entities/pet.entity';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class PetService {
   constructor(
     @InjectRepository(Pet)
     private readonly petRepository: Repository<Pet>,
-  ) { }
+  ) {}
   async create(createPetDto: CreatePetDto) {
-    return await this.petRepository.save(createPetDto);
+    try {
+      if (!createPetDto.ownerId)
+        throw new RpcException({
+          statusCode: 400,
+          message: 'El ID del propietario es obligatorio',
+        });
+      return await this.petRepository.save(createPetDto);
+    } catch (error) {
+      throw new RpcException({
+        statusCode: 500,
+        message: 'No se pudo crear la mascota',
+      });
+    }
   }
 
   async findAll() {
@@ -26,7 +39,7 @@ export class PetService {
   async findByOwnerId(ownerId: string) {
     return await this.petRepository.find({
       where: {
-        ownerId,
+        ownerId: ownerId,
       },
     });
   }
