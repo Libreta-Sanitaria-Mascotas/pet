@@ -58,6 +58,11 @@ export class PetController {
     return this.petService.update(updatePetDto);
   }
 
+  @MessagePattern({ cmd: 'validate_pet' })
+  validate(@Payload('id') id: string) {
+    return this.petService.validate(id);
+  }
+
   // @ApiOperation({
   //   summary: 'Delete a pet by id'
   // })
