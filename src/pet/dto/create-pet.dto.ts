@@ -6,6 +6,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 export class CreatePetDto {
   @ApiProperty({
@@ -38,6 +39,7 @@ export class CreatePetDto {
   })
   @IsNotEmpty()
   @IsDate()
+  @Type(() => Date)
   birthDate: Date;
 
   @ApiProperty({
@@ -58,4 +60,13 @@ export class CreatePetDto {
   @IsUUID()
   @IsOptional()
   ownerId?: string;
+
+  @ApiProperty({
+    description: 'The media ID of the pet image',
+    example: '12345678-1234-1234-1234-123456789012',
+    required: false,
+  })
+  @IsUUID()
+  @IsOptional()
+  mediaId?: string;
 }

@@ -14,6 +14,8 @@ export class Pet {
     birthDate: Date;
     @Column({name: 'owner_id', type: 'uuid', nullable: true})
     ownerId: string;
+    @Column({name: 'media_id', type: 'uuid', nullable: true})
+    mediaId?: string;
     @Column({nullable: true})
     sex?: 'male' | 'female';
     @CreateDateColumn({type: 'date', name: 'created_at'})
