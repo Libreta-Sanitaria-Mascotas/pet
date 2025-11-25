@@ -11,4 +11,6 @@ export const envValidationSchema = Joi.object({
   DB_PORT: Joi.number().required(),
   DB_NAME: Joi.string().required(),
   DB_TYPE: Joi.string().valid('postgres', 'mysql', 'sqlite').default('postgres'),
+  RABBITMQ_URL: Joi.string().default('amqp://admin:admin123@rabbitmq:5672'),
+  RABBITMQ_QUEUE: Joi.string().default('pet_queue'),
 }).unknown(true);

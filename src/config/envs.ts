@@ -10,6 +10,8 @@ interface EnvVars {
   DB_PORT: number;
   DB_NAME: string;
   DB_TYPE: 'postgres' | 'mysql' | 'sqlite';
+  RABBITMQ_URL: string;
+  RABBITMQ_QUEUE: string;
 }
 
 const {error, value} = envValidationSchema.validate(process.env);
@@ -30,5 +32,9 @@ export const envs = {
         port: envVars.DB_PORT,
         database: envVars.DB_NAME,
         type: envVars.DB_TYPE,
+    },
+    rabbitmq: {
+      url: envVars.RABBITMQ_URL,
+      queue: envVars.RABBITMQ_QUEUE,
     }
 };

@@ -67,7 +67,10 @@ export class PetService {
     const { id, ...data } = updatePetDto;
     const petFound = await this.findOne(id);
     if (!petFound) {
-      throw new Error('Pet not found');
+      throw new RpcException({
+        statusCode: 404,
+        message: 'Pet not found',
+      });
     }
     return this.petRepository.save({
       ...petFound,
@@ -78,7 +81,10 @@ export class PetService {
   async remove(id: string) {
     const petFound = await this.findOne(id);
     if (!petFound) {
-      throw new Error('Pet not found');
+      throw new RpcException({
+        statusCode: 404,
+        message: 'Pet not found',
+      });
     }
     return this.petRepository.remove(petFound);
   }
