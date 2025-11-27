@@ -10,6 +10,7 @@ interface EnvVars {
   DB_PORT: number;
   DB_NAME: string;
   DB_TYPE: 'postgres' | 'mysql' | 'sqlite';
+  LOG_LEVEL: string;
   RABBITMQ_URL: string;
   RABBITMQ_QUEUE: string;
 }
@@ -24,6 +25,7 @@ const envVars: EnvVars = value;
 
 export const envs = {
     nodeEnv: envVars.NODE_ENV,
+    logLevel: envVars.LOG_LEVEL,
     port: envVars.PORT,
     db:{
         username: envVars.DB_USERNAME,
