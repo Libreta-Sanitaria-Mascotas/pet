@@ -15,6 +15,9 @@ export class PetService {
     @Inject('USER_SERVICE') private readonly userClient: ClientProxy,
   ) {}
   
+  /**
+   * Crea una mascota validando existencia del propietario.
+   */
   async create(createPetDto: CreatePetDto) {
     try {
       if (!createPetDto.ownerId)
@@ -47,14 +50,17 @@ export class PetService {
     }
   }
 
+  /** Lista todas las mascotas (uso interno). */
   async findAll() {
     return await this.petRepository.find();
   }
 
+  /** Busca una mascota por ID. */
   async findOne(id: string) {
     return await this.petRepository.findOneBy({ id });
   }
 
+  /** Obtiene mascotas por ID de propietario. */
   async findByOwnerId(ownerId: string) {
     return await this.petRepository.find({
       where: {
@@ -63,6 +69,9 @@ export class PetService {
     });
   }
 
+  /**
+   * Actualiza mascota sin permitir cambio de propietario; preserva mediaId si no se envía.
+   */
   async update(updatePetDto: UpdatePetDto) {
     const { id, ...data } = updatePetDto;
     const petFound = await this.findOne(id);
@@ -72,12 +81,23 @@ export class PetService {
         message: 'Pet not found',
       });
     }
+    if (data.ownerId && data.ownerId !== petFound.ownerId) {
+      throw new RpcException({
+        statusCode: 403,
+        message: 'No está permitido cambiar el propietario de la mascota',
+      });
+    }
+    if (data.mediaId === undefined) {
+      // evitar borrar mediaId si no se envía
+      delete (data as any).mediaId;
+    }
     return this.petRepository.save({
       ...petFound,
       ...data,
     });
   }
 
+  /** Elimina una mascota por ID. */
   async remove(id: string) {
     const petFound = await this.findOne(id);
     if (!petFound) {
@@ -89,6 +109,7 @@ export class PetService {
     return this.petRepository.remove(petFound);
   }
 
+  /** Devuelve si la mascota existe (para validaciones cruzadas). */
   async validate(id: string): Promise<{ exists: boolean }> {
     const pet = await this.petRepository.findOneBy({ id });
     return { exists: !!pet };
