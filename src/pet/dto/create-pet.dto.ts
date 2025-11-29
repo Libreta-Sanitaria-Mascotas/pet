@@ -1,13 +1,24 @@
 import {
   IsDate,
-  IsIn,
+  IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
   IsUUID,
+  Max,
+  MaxDate,
+  Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+
+export const PET_SIZES = ['small', 'medium', 'large'] as const;
+export type PetSize = (typeof PET_SIZES)[number];
+export const PET_SPECIES = ['dog', 'cat', 'bird', 'rabbit', 'other'] as const;
+export type PetSpecies = (typeof PET_SPECIES)[number];
+
 export class CreatePetDto {
   @ApiProperty({
     description: 'The name of the pet',
@@ -19,11 +30,11 @@ export class CreatePetDto {
 
   @ApiProperty({
     description: 'The species of the pet',
-    example: 'Cat',
+    example: 'dog',
+    enum: PET_SPECIES,
   })
-  @IsString()
-  @IsNotEmpty()
-  species: string;
+  @IsEnum(PET_SPECIES)
+  species: PetSpecies;
 
   @ApiProperty({
     description: 'The breed of the pet',
@@ -40,6 +51,7 @@ export class CreatePetDto {
   @IsNotEmpty()
   @IsDate()
   @Type(() => Date)
+  @MaxDate(new Date(), { message: 'La fecha de nacimiento no puede ser futura' })
   birthDate: Date;
 
   @ApiProperty({
@@ -67,4 +79,27 @@ export class CreatePetDto {
   @IsUUID()
   @IsOptional()
   mediaId?: string;
+
+  @ApiProperty({
+    description: 'Tamaño de la mascota',
+    example: 'medium',
+    enum: PET_SIZES,
+    required: false,
+  })
+  @IsIn(PET_SIZES)
+  @IsOptional()
+  size?: PetSize;
+
+  @ApiProperty({
+    description: 'Peso de la mascota en kilogramos',
+    example: 12.5,
+    required: false,
+  })
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsPositive()
+  @Min(0.1)
+  @Max(200, { message: 'El peso no puede superar los 200kg' })
+  @IsOptional()
+  @Type(() => Number)
+  weight?: number;
 }

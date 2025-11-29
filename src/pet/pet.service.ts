@@ -38,6 +38,20 @@ export class PetService {
         });
       }
 
+      const now = new Date();
+      if (createPetDto.birthDate && createPetDto.birthDate > now) {
+        throw new RpcException({
+          statusCode: 400,
+          message: 'La fecha de nacimiento no puede ser futura',
+        });
+      }
+      if (createPetDto.weight && createPetDto.weight > 200) {
+        throw new RpcException({
+          statusCode: 400,
+          message: 'El peso informado es inválido',
+        });
+      }
+
       return await this.petRepository.save(createPetDto);
     } catch (error) {
       if (error instanceof RpcException) {
@@ -87,6 +101,18 @@ export class PetService {
         message: 'No está permitido cambiar el propietario de la mascota',
       });
     }
+    if (data.birthDate && data.birthDate > new Date()) {
+      throw new RpcException({
+        statusCode: 400,
+        message: 'La fecha de nacimiento no puede ser futura',
+      });
+    }
+    if (data.weight && data.weight > 200) {
+      throw new RpcException({
+        statusCode: 400,
+        message: 'El peso informado es inválido',
+      });
+    }
     if (data.mediaId === undefined) {
       // evitar borrar mediaId si no se envía
       delete (data as any).mediaId;
@@ -97,7 +123,7 @@ export class PetService {
     });
   }
 
-  /** Elimina una mascota por ID. */
+  /** Elimina una mascota por ID (soft delete). */
   async remove(id: string) {
     const petFound = await this.findOne(id);
     if (!petFound) {
@@ -106,7 +132,7 @@ export class PetService {
         message: 'Pet not found',
       });
     }
-    return this.petRepository.remove(petFound);
+    return this.petRepository.softRemove(petFound);
   }
 
   /** Devuelve si la mascota existe (para validaciones cruzadas). */
